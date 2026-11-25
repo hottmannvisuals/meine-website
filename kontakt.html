@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kontakt | Hottmann Visuals</title>
 <meta name="description" content="Kontakt zu Hottmann Visuals: Anfrage für Hochzeit, private Events, Paar- oder Familienshooting. Unterwegs in ganz Süddeutschland.">
-<link rel="icon" href="favicon.ico" sizes="48x48">
-<link rel="icon" href="favicon-96.png" type="image/png" sizes="96x96">
-<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="img/favicon.ico?v=20261125c" sizes="48x48">
+<link rel="icon" href="img/favicon-96.png?v=20261125c" type="image/png" sizes="96x96">
+<link rel="icon" href="img/favicon-192.png?v=20261125c" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=20261125c">
 <meta name="theme-color" content="#242322">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261125c">
 <script>
 // Hell/Dunkel: gespeicherte Wahl, sonst Einstellung des Geräts
 (function(){var t=null;try{t=localStorage.getItem('hv-theme')}catch(e){}
@@ -21,7 +21,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 <body class="page">
 
 <header><div class="wrap nav">
-  <a href="index.html" class="logo" aria-label="Hottmann Visuals – Startseite"><span class="mk" aria-hidden="true"></span><span class="lt"><b>Hottmann</b><small>VISUALS</small></span></a>
+  <a href="index.html" class="logo" aria-label="Hottmann Visuals – Startseite"><img class="mk mk-d" src="img/logo-hottmann-dark.png?v=20261125c" width="240" height="180" alt=""><img class="mk mk-l" src="img/logo-hottmann-light.png?v=20261125c" width="240" height="180" alt=""><span class="lt"><b>Hottmann</b><small>VISUALS</small></span></a>
   <ul><li><a href="index.html#leistungen">Leistungen</a></li><li><a href="index.html#ablauf">Ablauf</a></li><li><a href="index.html#ueber-mich">Über mich</a></li><li><a href="kontakt.html" aria-current="page">Kontakt</a></li></ul>
   <div class="tools">
     <a class="icon-btn" href="https://www.instagram.com/hottmann_visuals" target="_blank" rel="noopener" aria-label="Hottmann Visuals auf Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-theme',t)})();
       <label>Dein Name *<input id="fn" name="Name" required autocomplete="name"></label>
       <label>E-Mail oder Telefon *<input id="fc" name="Kontakt" required autocomplete="email" placeholder="So erreicht dich Markus"></label>
       <label>Anlass<select id="fa" name="Anlass"><option>Hochzeit</option><option>Privates Event</option><option>Paarshooting</option><option>Familie</option><option>Portrait</option><option>Firmenshooting</option><option>Etwas anderes</option></select></label>
-      <label>Datum<input id="fd" name="Datum" type="date"></label>
+      <label>Datum *<input id="fd" name="Datum" type="date" required></label>
       <label class="full">Ort<input id="fo" name="Ort" placeholder="z.B. Location oder Stadt"></label>
       <label class="full">Was planst du?<textarea id="fm" name="Nachricht" placeholder="Erzähl mir kurz von deinem Anlass, der Anzahl der Gäste und deinen Wünschen."></textarea></label>
       <label class="full check"><span><input type="checkbox" required> Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen. Meine Angaben werden nur zur Bearbeitung meiner Anfrage verwendet.</span></label>
@@ -64,7 +64,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 </section>
 
 <footer><div class="wrap fo">
-  <span class="flogo"><span class="mk" aria-hidden="true"></span>© 2026 Hottmann Visuals</span>
+  <span class="flogo"><img class="mk mk-d" src="img/logo-hottmann-dark.png?v=20261125c" width="240" height="180" alt=""><img class="mk mk-l" src="img/logo-hottmann-light.png?v=20261125c" width="240" height="180" alt="">© 2026 Hottmann Visuals</span>
   <nav><a href="kontakt.html">Kontakt</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
   <span>Website von <a href="https://balz-media.de" target="_blank" rel="noopener">Balz Media</a></span>
 </div></footer>
@@ -93,10 +93,12 @@ function check(){const e=$('err');let bad=null,msg='';document.querySelectorAll(
   if(!$('fn').value.trim()){bad=$('fn');msg='Bitte gib deinen Namen ein.'}
   else if(!$('fc').value.trim()){bad=$('fc');msg='Bitte gib deine E-Mail-Adresse oder Telefonnummer an, damit Markus dir antworten kann.'}
   else if(!contactOk($('fc').value)){bad=$('fc');msg='Bitte prüf deine E-Mail-Adresse oder Telefonnummer, sie scheint nicht vollständig zu sein.'}
+  else if(!$('fd').value){bad=$('fd');msg='Bitte wähle ein Datum für dein Shooting. Steht es noch nicht fest, nimm ein ungefähres und schreib es in die Nachricht.'}
   else if(!document.querySelector('.check input').checked){bad=document.querySelector('.check input');msg='Bitte bestätige noch kurz die Datenschutzerklärung.'}
   if(bad){bad.classList.add('bad');e.textContent=msg;e.style.display='block';bad.focus();return false}
   e.style.display='none';return true}
 document.getElementById('form').addEventListener('input',e=>e.target.classList.remove('bad'));
+try{$('fd').min=new Date().toISOString().slice(0,10)}catch(e){}
 document.getElementById('form').addEventListener('submit',async e=>{e.preventDefault();if(!check())return;
   const f=e.target,ok=document.getElementById('ok'),btn=document.getElementById('send');
   const v=id=>document.getElementById(id).value.trim();
