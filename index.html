@@ -21,7 +21,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 <body>
 
 <header><div class="wrap nav">
-  <a href="index.html" class="logo" aria-label="Hottmann Visuals – Startseite"><img class="lg lg-d" src="img/logo-hv-mark-dark.png" width="480" height="359" alt=""><img class="lg lg-l" src="img/logo-hv-mark-light.png" width="480" height="359" alt=""><span><b>Hottmann</b><small>VISUALS</small></span></a>
+  <a href="index.html" class="logo" aria-label="Hottmann Visuals – Startseite"><span class="mk" aria-hidden="true"></span><span class="lt"><b>Hottmann</b><small>VISUALS</small></span></a>
   <ul><li><a href="#leistungen">Leistungen</a></li><li><a href="#ablauf">Ablauf</a></li><li><a href="#ueber-mich">Über mich</a></li><li><a href="kontakt.html">Kontakt</a></li></ul>
   <div class="tools">
     <a class="icon-btn" href="https://www.instagram.com/hottmann_visuals" target="_blank" rel="noopener" aria-label="Hottmann Visuals auf Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
@@ -112,7 +112,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 </section>
 
 <footer><div class="wrap fo">
-  <span class="flogo"><img class="lg lg-d" src="img/logo-hv-mark-dark.png" width="480" height="359" alt=""><img class="lg lg-l" src="img/logo-hv-mark-light.png" width="480" height="359" alt="">© 2026 Hottmann Visuals</span>
+  <span class="flogo"><span class="mk" aria-hidden="true"></span>© 2026 Hottmann Visuals</span>
   <nav><a href="kontakt.html">Kontakt</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
   <span>Website von <a href="https://balz-media.de" target="_blank" rel="noopener">Balz Media</a></span>
 </div></footer>
@@ -122,36 +122,35 @@ document.documentElement.setAttribute('data-theme',t)})();
 document.getElementById('theme').addEventListener('click',()=>{const r=document.documentElement;
   const t=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',t);
   try{localStorage.setItem('hv-theme',t)}catch(e){}});
-// Filmstreifen: läuft automatisch (GPU, ruckelfrei); beim Wischen übernimmt das normale Scrollen des Handys
+// Filmstreifen: endlos in beide Richtungen, läuft automatisch, mit Finger/Maus wischbar (mit Schwung)
 (()=>{const sc=document.getElementById('scroller'),st=document.getElementById('strip');
-const base=[...st.children],COPIES=8;
+const base=[...st.children],COPIES=4;
 for(let c=1;c<COPIES;c++)base.forEach(f=>{const k=f.cloneNode(true);k.setAttribute('aria-hidden','true');st.appendChild(k)});
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,speed=28; // Pixel pro Sekunde
-let L=0,auto=true,tx=0,last=0,idleT=null,touching=false;
-const measure=()=>{L=st.scrollWidth/COPIES};
-const norm=x=>{const lo=3*L;return lo+(((x-lo)%L)+L)%L}; // immer im Mittelteil bleiben
-function startAuto(){if(reduce)return;const x=norm(sc.scrollLeft);sc.scrollLeft=x;tx=0;st.style.transform='translate3d(0,0,0)';auto=true;last=0}
-function toUser(){if(!auto)return;auto=false;const x=sc.scrollLeft+tx;st.style.transform='none';tx=0;sc.scrollLeft=x}
-function idle(){clearTimeout(idleT);idleT=setTimeout(()=>{if(!touching&&!down)startAuto()},1400)}
-function loop(now){if(auto&&!reduce&&L){if(last){tx+=speed*Math.min(.05,(now-last)/1000);
-  if(sc.scrollLeft+tx>=4*L)tx-=L; st.style.transform='translate3d('+(-tx)+'px,0,0)'}last=now}
-  else last=0;requestAnimationFrame(loop)}
-function init(){measure();sc.scrollLeft=3*L;startAuto();if(reduce){auto=false}}
-if(document.readyState==='complete')init();else addEventListener('load',init);
-addEventListener('resize',()=>{const p=auto?sc.scrollLeft+tx:sc.scrollLeft,old=L;measure();if(old){toUser();sc.scrollLeft=norm(p*L/old);idle()}});
-requestAnimationFrame(loop);
-// Wischen (Handy) und Trackpad: sofort auf normales Scrollen umschalten, erst nach Ruhe weiterlaufen
-sc.addEventListener('touchstart',()=>{touching=true;toUser();clearTimeout(idleT)},{passive:true});
-sc.addEventListener('touchend',()=>{touching=false;idle()},{passive:true});
-sc.addEventListener('touchcancel',()=>{touching=false;idle()},{passive:true});
-sc.addEventListener('wheel',()=>{toUser();idle()},{passive:true});
-sc.addEventListener('scroll',()=>{if(!auto)idle()},{passive:true});
-// Maus ziehen (Computer)
-let down=false,sx=0,sl=0;
-sc.addEventListener('mousedown',e=>{down=true;toUser();sx=e.pageX;sl=sc.scrollLeft;sc.classList.add('drag');e.preventDefault()});
-addEventListener('mousemove',e=>{if(down)sc.scrollLeft=sl-(e.pageX-sx)});
-addEventListener('mouseup',()=>{if(down){down=false;sc.classList.remove('drag');idle()}});
-document.addEventListener('visibilitychange',()=>{last=0});
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,AUTO=28/1000; // Pixel pro ms
+let L=1,x=0,v=0,dragging=false,lastT=0,idleSince=0,ramp=reduce?0:1,px=0,pt=0,samples=[];
+const measure=()=>{L=st.scrollWidth/COPIES||1};
+const render=()=>{const o=((x%L)+L)%L;st.style.transform='translate3d('+(-o)+'px,0,0)'};
+function frame(t){const dt=lastT?Math.min(48,t-lastT):16;lastT=t;
+  if(!dragging){
+    if(Math.abs(v)>0.01){x+=v*dt;v*=Math.pow(0.95,dt/16);idleSince=t}   // Schwung ausrollen lassen
+    else{v=0;if(!reduce&&t-idleSince>1200){ramp=Math.min(1,ramp+dt/700);x+=AUTO*ramp*dt}} // danach sanft weiterlaufen
+  }
+  render();requestAnimationFrame(frame)}
+function down(e){if(e.pointerType==='mouse'&&e.button!==0)return;dragging=true;v=0;ramp=0;px=e.clientX;pt=e.timeStamp;samples=[];
+  sc.setPointerCapture&&sc.setPointerCapture(e.pointerId);sc.classList.add('drag')}
+function move(e){if(!dragging)return;const dx=e.clientX-px;x-=dx;px=e.clientX;
+  samples.push([e.timeStamp,dx]);while(samples.length&&e.timeStamp-samples[0][0]>100)samples.shift()}
+function up(e){if(!dragging)return;dragging=false;sc.classList.remove('drag');
+  const span=samples.length?(e.timeStamp-samples[0][0])||16:16,dist=samples.reduce((s,a)=>s+a[1],0);
+  v=Math.max(-6,Math.min(6,-dist/span));idleSince=performance.now();ramp=0}
+sc.addEventListener('pointerdown',down);sc.addEventListener('pointermove',move);
+sc.addEventListener('pointerup',up);sc.addEventListener('pointercancel',up);sc.addEventListener('lostpointercapture',up);
+// Trackpad / Mausrad seitlich
+sc.addEventListener('wheel',e=>{const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:(e.shiftKey?e.deltaY:0);
+  if(!d)return;e.preventDefault();x+=d;v=0;ramp=0;idleSince=performance.now()},{passive:false});
+measure();addEventListener('load',measure);addEventListener('resize',measure);
+document.addEventListener('visibilitychange',()=>{lastT=0});
+requestAnimationFrame(frame);
 })();
 // Leistungen: wischbar, mit Pfeilen und Punkten
 (()=>{const t=document.getElementById('svc'),cards=[...t.children],dots=document.getElementById('sdots'),pv=document.getElementById('sp'),nx=document.getElementById('sn');
