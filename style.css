@@ -212,3 +212,20 @@ form #send{justify-content:center}
 .check input.bad{outline:2px solid #c0392b;outline-offset:2px}
 @media(max-width:560px){.nav .logo .lt{display:none}.logo .mk{height:50px}}
 section[id]{scroll-margin-top:96px}
+
+/* Formular verschwindet nach dem Senden, Danke-Karte erscheint */
+form{transition:opacity .5s ease,transform .5s ease,filter .5s ease}
+form.leaving{opacity:0;transform:translateY(-16px) scale(.98);filter:blur(4px);pointer-events:none}
+.thanks{background:var(--white);border-radius:8px;padding:56px 38px;text-align:center;opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.thanks.in{opacity:1;transform:none}
+.thanks:focus{outline:none}
+.thanks h2{font-size:clamp(30px,4vw,42px);margin:22px 0 12px}
+.thanks p{color:var(--soft);max-width:38ch;margin:0 auto 28px}
+.tick{width:76px;height:76px;fill:none;stroke:var(--sage);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tick circle{stroke-dasharray:151;stroke-dashoffset:151}
+.tick path{stroke-dasharray:36;stroke-dashoffset:36}
+.thanks.in .tick circle{animation:draw .7s .15s ease forwards}
+.thanks.in .tick path{animation:draw .45s .75s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){form,.thanks{transition:none}.tick circle,.tick path{stroke-dashoffset:0;animation:none!important}}
+form[hidden],.thanks[hidden]{display:none!important}
