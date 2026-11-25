@@ -38,8 +38,9 @@ header.scrolled{border-bottom-color:var(--line)}
 .logo{text-decoration:none;line-height:1;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .logo .lg{height:46px;width:auto}
 .mk{display:block;width:auto}
-.logo .mk{height:46px}
-.flogo .mk{height:34px}
+.logo .mk{height:60px}
+.logo .lt{display:none!important}
+.flogo .mk{height:52px}
 .mk-l{display:none}[data-theme="dark"] .mk-d{display:none}[data-theme="dark"] .mk-l{display:block}
 .logo .lt{display:block}
 .lg-l{display:none}[data-theme="dark"] .lg-d{display:none}[data-theme="dark"] .lg-l{display:block}
@@ -161,7 +162,7 @@ footer nav{display:flex;gap:10px 22px;flex-wrap:wrap}
   .nav .btn{padding:10px 14px;font-size:13px}
   .nav .btn .long{display:none}
   .nav .logo b{font-size:22px}
-  .logo .mk{height:38px}
+  .logo .mk{height:50px}
   .logo{gap:9px}
   .icon-btn{width:38px;height:38px}
   .tools{gap:6px}
@@ -209,5 +210,5 @@ form #send{justify-content:center}
 [data-theme="dark"] .err{color:#ff8a80}
 .bad{border-color:#c0392b!important;box-shadow:0 0 0 3px rgba(192,57,43,.15)}
 .check input.bad{outline:2px solid #c0392b;outline-offset:2px}
-@media(max-width:560px){.nav .logo .lt{display:none}.logo .mk{height:40px}}
+@media(max-width:560px){.nav .logo .lt{display:none}.logo .mk{height:50px}}
 section[id]{scroll-margin-top:96px}
